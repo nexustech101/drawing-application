@@ -9,21 +9,64 @@ export default class Particle {
     /**
      * Initializes a new instance of the Particle class with random properties and associates it with a canvas.
      */
-    constructor() {
+    constructor(particles) {
         this.manager = new CanvasManager("canvas");
         this.ctx = this.manager.getContext();
         this.canvas = this.manager.canvas;
-        this.color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-        this.x = Math.random() * this.canvas.width;
-        this.y = Math.random() * this.canvas.height;
+        this.color = "#CCC";
+
+        // this.x = Math.random() * this.canvas.width;
+        // this.y = Math.random() * this.canvas.height;
+
         this.radius = 15; // Default radius of particles
         this.text = 'K';  // Default text displayed on the particle
         this.mass = 1;    // Assumes a default mass of 1 for simplicity
+        this.isInShape = false;
         this.velocity = {
             dx: Math.random() * 5 - 1.5,  // Initial horizontal velocity
             dy: Math.random() * 5 - 1.5,  // Initial vertical velocity
         };
+
+        // Continuously attempt to place the particle at a non-overlapping position
+        do {
+            this.x = Math.random() * this.canvas.width;
+            this.y = Math.random() * this.canvas.height;
+        } while (this.isOverlapping(particles));
+
+        this.canvas.addEventListener("mousemove", e => {
+            this.handleMouseMove(e);
+        });
     }
+
+    /**
+     * Handles the mouse move event over the canvas. This function is bound to the mousemove event of the canvas
+     * and is triggered every time the mouse moves within the canvas area. It calculates the mouse's position relative
+     * to the canvas and determines if the mouse pointer is within the radius of this particle instance. Based on this,
+     * it updates the isInShape property, which indicates whether the mouse is currently hovering over the particle.
+     *
+     * @param {MouseEvent} event - The MouseEvent object containing information about the mouse event, including
+     *                             the coordinates of the mouse pointer relative to the entire viewport.
+     * @returns {void}
+     */
+    handleMouseMove(event) {
+        // Get the bounding rectangle of the canvas to calculate the mouse's relative position correctly.
+        const rect = this.canvas.getBoundingClientRect();
+
+        // Calculate the mouse's x and y coordinates within the canvas by adjusting with the rectangle's position.
+        // This accounts for any offset of the canvas element within the view.
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        // Calculate the distance from the current particle's center to the mouse position. This uses the Euclidean
+        // distance formula, sqrt((x2 - x1)^2 + (y2 - y1)^2), where (x1, y1) is the particle center and (x2, y2) is
+        // the mouse position.
+        const distance = this.distance(mouseX, this.x, mouseY, this.y);
+
+        // Update isInShape based on whether the calculated distance is less than the radius of the particle.
+        // If the distance is less than the radius, the mouse is considered to be within the shape (hovering over it).
+        this.isInShape = distance < this.radius;
+    }
+
 
     /**
      * Draws the particle on the canvas, including its color and any text label.
@@ -36,11 +79,11 @@ export default class Particle {
         this.ctx.stroke();
         this.ctx.fill();
 
-        // Drawing text at the particle's center
-        this.ctx.font = `${this.radius / 2}px Arial`;
-        this.ctx.fillStyle = 'white';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(this.text, this.x - 3, this.y + 3);
+        // // Drawing text at the particle's center
+        // this.ctx.font = `${this.radius / 2}px Arial`;
+        // this.ctx.fillStyle = 'white';
+        // this.ctx.textBaseline = 'middle';
+        // this.ctx.fillText(this.text, this.x - 3, this.y + 3);
     }
 
     /**
@@ -51,6 +94,7 @@ export default class Particle {
      */
     update(particles) {
         this.draw();
+        this.changeColor();
 
         // Check for collisions with other particles
         particles.forEach((other) => {
@@ -117,7 +161,7 @@ export default class Particle {
         first.velocity.dy = final1.dy;
         second.velocity.dx = final2.dx;
         second.velocity.dy = final2.dy;
-    }
+    };
 
     /**
      * Rotates a velocity vector by a specified angle.
@@ -131,10 +175,11 @@ export default class Particle {
             dx: velocity.dx * Math.cos(angle) - velocity.dy * Math.sin(angle),
             dy: velocity.dx * Math.sin(angle) + velocity.dy * Math.cos(angle)
         };
-    }
+    };
 
     /**
      * Calculates the Euclidean distance between two points.
+     * 
      * @param {int} x1 - The x-coordinate of the first point.
      * @param {int} x2 - The x-coordinate of the second point.
      * @param {int} y1 - The y-coordinate of the first point.
@@ -143,7 +188,40 @@ export default class Particle {
      */
     distance(x1, x2, y1, y2) {
         return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
-    }
+    };
 
+    /**
+     * Checks if the newly created particle overlaps with any existing particles.
+     * 
+     * @param {Array<Particle>} particles - The list of all existing particles.
+     * @returns {boolean} True if there is an overlap, false otherwise.
+     */
+    isOverlapping(particles) {
+        for (let i = 0; i < particles.length; i++) {
+            const distance = this.distance(this.x, particles[i].x, this.y, particles[i].y);
+
+            // Check if the distance is less than the sum of their radii
+            if (distance <= this.radius + particles[i].radius) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Changes the color of the particle based on its hover state. This method is designed to visually indicate
+     * whether the mouse is currently hovering over the particle by changing its color.
+     *
+     * The function checks the value of `this.isInShape`, which is a boolean indicating whether the mouse pointer
+     * is within the particle's radius. If `this.isInShape` is true, indicating that the mouse is hovering over
+     * the particle, the color is set to blue ('#0000ff'). If false, the color reverts to a default color ('#CCC').
+     *
+     * This method is typically called within the `update` method of the Particle class, allowing the particle's
+     * color to dynamically change in response to mouse movements over the canvas.
+     * 
+     * @returns {void}
+     */
+    changeColor() {
+        this.isInShape ? this.color = "#0000ff" : this.color = "#CCC";
+    };
 }
-
