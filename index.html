@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@eastdesire/jscolor"></script>
+    <title>Coloring App</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class="image-container" id="image-container">
+      <!-- <img alt="..." id="saveImage"> -->
+    </div>
+    <div class="container">
+        <button type="button" id="clearBtn">
+          <img height="20px" width="20px" src="./assets/alphabet.png" alt="...">
+        </button>
+        <button type="button" id="undo">
+          <img height="20px" width="20px" src="./assets/undo (2).png" alt="...">
+        </button>
+        <button type="button" id="redo">
+          <img height="20px" width="20px" src="./assets/redo.png" alt="...">
+        </button>
+        <button type="button" id="saveButton">
+          <img height="25px" width="25px" src="./assets/plus.png" alt="...">
+        </button>
+        <button type="button">
+          <a type="download" class="link-styles" id="download">
+          <img height="25px" width="25px" src="./assets/download.png" alt="...">
+        </a>
+        </button>
+        <div class="flex">
+          <span
+          class="color"
+          style="background-color: red"
+        ></span>
+        <span
+          class="color"
+          style="background-color: rgb(255, 94, 0)"
+        ></span>
+        <span
+          class="color"
+          style="background-color: yellow"
+        ></span>
+        <span
+          class="color"
+          style="background-color: green"
+        ></span>
+        <span
+          class="color"
+          style="background-color: rgb(52.16, 73.33, 39.61)"
+        ></span>
+        <span
+          class="color"
+          style="background-color: black"
+        ></span>
+        <span
+          class="color"
+          style="background-color: white"
+        ></span>
+        <span
+          class="color"
+          style="background-color: cyan"
+        ></span>
+        <span
+          class="color"
+          style="background-color: blue"
+        ></span>
+        <span
+          class="color"
+          style="background-color: #651d87"
+          style="background-color: #b10c0c"
+        ></span>
+        <span
+          class="color"
+          style="background-color: #1f1f1f; border: 1px solid #ccc;"
+        ></span>
+        </div>
+        <input id="color" class="jscolor" value="#b10c0c">
+        <!-- <input oninput="lineWidth = this.value" type="range" min="1" max="100" id="range" /> -->
+      </div>
+    </div>
+    <!-- <script src="script.js"></script> -->
+    <script type="module" src="js/utils.mjs"></script>
+    <script type="module" src="js/cache.mjs"></script>
+    <script type="module" src="js/canvas.mjs"></script>
+    <script type="module" src="js/image.mjs"></script>
+    <script type="module" src="js/shapes.mjs"></script>
+    <script type="module" src="js/canvasManager.mjs"></script>
+    <script type="module" src="js/index.mjs"></script>
+  </body>
+</html>
